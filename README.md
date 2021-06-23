@@ -2,7 +2,7 @@
 
 This document will keep an up to date version of my personal Oracle dockerized development environment. The main goal is to have the Oracle database with APEX installed connected to ORDS.
 
-This is achieved using Oracle 19c containers (not to be confused with Docker containers). If you're not too familiar with Oracle 12c containers I highly recommend reading [this](http://www.oracle.com/technetwork/articles/database/multitenant-part1-pdbs-2193987.html) article which covers Container Databases (CDB) and Pluggable Databases (PDB).
+This is achieved using Oracle 19c containers (not to be confused with Docker containers). If you're not too familiar with Oracle containers I highly recommend reading [this](http://www.oracle.com/technetwork/articles/database/multitenant-part1-pdbs-2193987.html) article which covers Container Databases (CDB) and Pluggable Databases (PDB).
 
 <!-- TOC depthFrom:2 -->
 
@@ -27,13 +27,11 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
     - [CDB Setup](#cdb-setup)
     - [PDB Setup](#pdb-setup)
       - [Create PDBs](#create-pdbs)
-      - [APEX 18.1.0 Install](#apex-1810-install)
-      - [APEX 5.1.4 Install](#apex-514-install)
-      - [APEX 5.0.4 Install](#apex-504-install)
+      - [APEX 21.1 Install](#apex-1810-install)
+      - [APEX 20.2 Install](#apex-514-install)
   - [ORDS Containers](#ords-containers)
-    - [ORDS 18.1.0](#ords-1810)
-    - [ORDS 5.1.4](#ords-514)
-    - [ORDS 5.0.4](#ords-504)
+    - [ORDS 21.1](#ords-1810)
+    - [ORDS 20.2](#ords-514)
     - [ORDS Container Wrappup](#ords-container-wrappup)
 - [Useful Commands](#useful-commands)
   - [Quick Start](#quick-start)
@@ -105,10 +103,9 @@ Path | Description
 --- | ---
 `~/docker` | root
 `~/docker/apex` | APEX installation files and images for each version. 2 versions of APEX are included in this example but more can easily be added
-`~/docker/apex/18.1.0` | APEX 18.1.0 installation files 
-`~/docker/apex/5.1.4` | APEX 5.1.4 installation files  
-`~/docker/apex/5.0.4` | APEX 5.0.4 installation files  
-`~/docker/oracle`  |  Oracle 12.2 data files
+`~/docker/apex/21.1.0` | APEX 18.1.0 installation files 
+`~/docker/apex/20.2` | APEX 5.1.4 installation files  
+`~/docker/oracle`  |  Oracle data files
 `~/docker/ords`  |  ORDS Dockerfile (to build ORDS image)
 `~/docker/tmp`  |  Temp folder
 
@@ -218,18 +215,18 @@ Adding the `-e TZ` option will set the appropriate timezone for the OS and the d
 ```bash
 docker run -d -it \
 --name oracle \
--p 32122:1521 \
--e TZ=America/Edmonton \
---network=oracle_network \
+-p 1521:1521 \
+-e TZ=Europe/London \
+--network=[network] \
 -v ~/docker/oracle:/ORCL \
 -v ~/docker/apex:/tmp/apex \
-container-registry.oracle.com/database/enterprise:12.2.0.1
+evriinsight/odb:19c
 
 # Running docker ps will result in:
 docker ps
 
 CONTAINER ID        IMAGE                                                        COMMAND                  CREATED             STATUS                            PORTS                               NAMES
-6b4d96d63cf5        container-registry.oracle.com/database/enterprise:12.2.0.1   "/bin/sh -c '/bin/..."   4 seconds ago       Up 5 seconds (health: starting)   5500/tcp, 0.0.0.0:32112->1521/tcp   oracle
+6b4d96d63cf5        evriinsight/odb:19c                                          "/bin/sh -c '/bin/..."   4 seconds ago       Up 5 seconds (health: starting)   5500/tcp, 0.0.0.0:1521->1521/tcp   oracle
 
 # More specifically if you need to create a script around this
 # docker inspect --format="{{.State.Health.Status}}" oracle
@@ -240,28 +237,7 @@ You'll need to run `docker ps` several times until the status is `(healthy)`. Be
 
 You can follow the install by running `docker logs oracle`
 
-### Oracle CDB and PDB Setup
-
-#### CDB Setup
-
-Starting in Oracle 12.2 the database should not come pre-installed with APEX. [Joel Kallman](https://twitter.com/joelkallman) wrote an [article](http://joelkallman.blogspot.ca/2016/03/an-important-change-coming-for-oracle.html) about why this. For some reason the container from Oracle comes with APEX 5.0.4 installed in the CDB. It must first be removed.
-
-```bash
-# On your laptop:
-docker exec -it oracle bash -c "source /home/oracle/.bashrc; bash"
-
-# You should now be in the Oracle Docker container
-cd /tmp/apex/5.0.4
-
-sqlplus sys/Oradoc_db1@localhost/orclcdb.localdomain as sysdba
-
-@apxremov.sql
--- Exit sqlplus
-exit 
-
-# Exit bash
-exit
-```
+### Oracle PDB Setup
 
 #### PDB Setup
 
@@ -271,36 +247,29 @@ Note I've included the APEX installs in these sections since they're required fo
 
 ##### Create PDBs
 
-On your laptop connect to the database: `sqlcl sys/Oradoc_db1@localhost:32122:orclcdb as sysdba`
+On your laptop connect to the database: `sqlcl sys/[password]@localhost:1521:orclcdb as sysdba`
 
 ```sql
--- Create 18.1.0 PDB
-create pluggable database orclpdb1810 admin user pdb_adm identified by Oradoc_db1
-  file_name_convert=('/u02/app/oracle/oradata/ORCL/pdbseed/','/u02/app/oracle/oradata/ORCL/ORCLPDB1810/');
+-- Create 21.1 PDB
+create pluggable database orclpdb2 admin user pdb_adm identified by [password]
+  file_name_convert=('/u02/app/oracle/oradata/ORCL/pdbseed/','/u02/app/oracle/oradata/ORCL/ORCLPDB2/');
 
--- Create 5.1.4 PDB
-create pluggable database orclpdb514 admin user pdb_adm identified by Oradoc_db1
-  file_name_convert=('/u02/app/oracle/oradata/ORCL/pdbseed/','/u02/app/oracle/oradata/ORCL/ORCLPDB514/');
-
--- Create 5.0.4 PDB
-create pluggable database orclpdb504 admin user pdb_adm identified by Oradoc_db1
-  file_name_convert=('/u02/app/oracle/oradata/ORCL/pdbseed/','/u02/app/oracle/oradata/ORCL/ORCLPDB504/');
+-- Create 20.2 PDB
+create pluggable database orclpdb3 admin user pdb_adm identified by [password]
+  file_name_convert=('/u02/app/oracle/oradata/ORCL/pdbseed/','/u02/app/oracle/oradata/ORCL/ORCLPDB3/');
 
 -- Running the following query will show the newly created PDBs but they are not open for Read Write:
-select vp.name, vp.open_mode
-from v$pdbs vp;
+select vp.name, vp.open_mode from v$pdbs vp;
 
 NAME        OPEN_MODE
 PDB$SEED    READ WRITE
 ORCLPDB1    READ WRITE
-ORCLPDB514  MOUNTED
-ORCLPDB504  MOUNTED
-ORCLPDB1810 MOUNTED
+ORCLPDB2  MOUNTED
+ORCLPDB3  MOUNTED
 
 -- Open the PDB
-alter pluggable database orclpdb1810 open read write;
-alter pluggable database orclpdb514 open read write; 
-alter pluggable database orclpdb504 open read write;
+alter pluggable database orclpdb1 open read write;
+alter pluggable database orclpdb2 open read write;
 
 -- If nothing is changed the PDBs won't be loaded on boot.
 -- They're a few ways to do this
@@ -314,15 +283,15 @@ alter pluggable database all save state;
 exit
 ```
 
-##### APEX 18.1.0 Install
+##### APEX 21.1 Install
 
 ```bash
 # On your laptop
 docker exec -it oracle bash -c "source /home/oracle/.bashrc; bash"
 
 # You should now be in the Oracle Docker container
-cd /tmp/apex/18.1.0
-sqlplus sys/Oradoc_db1@localhost/orclpdb1810.localdomain as sysdba
+cd /tmp/apex/21.1
+sqlplus sys/[password]@localhost/orclpdb1 as sysdba
 ```
 
 ```sql

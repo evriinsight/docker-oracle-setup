@@ -1,8 +1,8 @@
 # docker-oracle-setup
 
-This document will keep an up to date version of my personal Oracle dockerized development environment. The main goal is to have one Oracle database with multiple versions of APEX installed. 
+This document will keep an up to date version of my personal Oracle dockerized development environment. The main goal is to have the Oracle database with APEX installed connected to ORDS.
 
-This is achieved using Oracle 12c containers (not to be confused with Docker containers). If you're not too familiar with Oracle 12c containers I highly recommend reading [this](http://www.oracle.com/technetwork/articles/database/multitenant-part1-pdbs-2193987.html) article which covers Container Databases (CDB) and Pluggable Databases (PDB).
+This is achieved using Oracle 19c containers (not to be confused with Docker containers). If you're not too familiar with Oracle 12c containers I highly recommend reading [this](http://www.oracle.com/technetwork/articles/database/multitenant-part1-pdbs-2193987.html) article which covers Container Databases (CDB) and Pluggable Databases (PDB).
 
 <!-- TOC depthFrom:2 -->
 
@@ -74,10 +74,8 @@ The following port mapping will be used. To help remember the DB version, the da
 
 Container | Container Port | Laptop Port | Description
 --- | --- | --- | ---
-`oracle` | `1521` | `32122` | TNS listener for Oracle 12.2
-`ords-504` | `8080` | `32504` | ORDS for APEX 5.0.4
-`ords-514` | `8080` | `32514` | ORDS for APEX 5.1.4
-`ords-1810` | `8080` | `31810` | ORDS for APEX 18.1.0
+`oracle` | `1521` | `[port]` | TNS listener for Oracle 19.3
+`ords-504` | `8080` | `[port]` | ORDS for APEX
 
 ### Passwords
 
@@ -85,8 +83,8 @@ Since this setup is for my own development environment (and to keep things simpl
 
 Container | Username | Password | Description
 --- | --- | --- | ---
-`oracle`  | `sys` |  `Oradoc_db1` | All sys passwords for all PDBs will be the same
-`oracle`  | `admin` |  `Oradoc_db1` | Workspace `Internal` for all APEX admin
+`oracle`  | `sys` |  `[password]` | All sys passwords for all PDBs will be the same
+`oracle`  | `admin` |  `[password]` | Workspace `Internal` for all APEX admin
 
 ### Download Files
 
@@ -94,10 +92,9 @@ Due to licensing restrictions I can't host/provide these files in Github or else
 
 Application | Description
 --- | ---
-[APEX 18.1](http://www.oracle.com/technetwork/developer-tools/apex/downloads/index.html) | At the time of writing, 18.1 is the most recent version.
-[APEX 5.1.4](http://www.oracle.com/technetwork/developer-tools/apex/downloads/apex-51-archive-3661848.html) | Find it in the APEX archive page.
-[APEX 5.0.4](http://www.oracle.com/technetwork/developer-tools/apex/downloads/apex-5-archive-2606313.html) | Find it in the APEX archive page.
-[ORDS 18.1.1](http://www.oracle.com/technetwork/developer-tools/rest-data-services/downloads) | At the time of writing ORDS 18.1.1 was the most recent version.
+[APEX 21.1](https://www.oracle.com/tools/downloads/apex-downloads.html) | At the time of writing, 21.1 is the most recent version.
+[APEX 20.2](https://www.oracle.com/tools/downloads/apex-202-downloads.html) | Find it in the APEX archive page.
+[ORDS 21.1.3](https://www.oracle.com/database/technologies/appdev/rest-data-services-downloads.html) | At the time of writing ORDS 18.1.1 was the most recent version.
 
 
 ### Laptop Folder Structure
@@ -146,14 +143,11 @@ cd ~/docker/apex
 cp ~/Downloads/apex*.zip .
 
 # Unzip
-unzip apex_18.1.zip
-mv apex 18.1.0
+unzip apex_21.1_en.zip
+mv apex 21.1
 
-unzip apex_5.1.4.zip
-mv apex 5.1.4
-
-unzip apex_5.0.4.zip
-mv apex 5.0.4
+unzip apex_20.2_en.zip
+mv apex 20.2
 
 # ORDS will be dealt in the ORDS image section
 ```
@@ -163,13 +157,13 @@ mv apex 5.0.4
 In order for the containers to “talk” to each other we need to setup a Docker network and associate all the containers on this network. Containers can reference each other by their respective container names. When referencing another container on the same Docker network the port used is the container’s native port **not** the mapped port on your laptop.
 
 ```bash
-docker network create oracle_network
+docker network create [network]
 # Other docker network commands (don't need to run them as part of install)
 # Connect and existing container to a docker network
 # docker network connect <network name> <container name>
 # View a network and connected containers
 # In this example "oracle_network" is the network we're interested in
-docker network inspect oracle_network
+docker network inspect [network]
 ```
 
 ### Docker Images
@@ -189,17 +183,17 @@ Two images are required to get the setup working: Oracle and ORDS.
 # Login to Oracle's container registry
 docker login container-registry.oracle.com
 
-# They're various docker 12c images. To help reduce the number (and size) of images on my laptop I only needed the 12.2 version
-# This will take a while to run as the image size is around 3.5 GB
+# They're various docker 19c images.
+# This will take a while to run as the image size is around 8 GB
 # Note currently the registry server is slow so you may have to wait a while for the image to download
-docker pull container-registry.oracle.com/database/enterprise:12.2.0.1
+docker pull container-registry.oracle.com/database/enterprise
 ```
 
 #### ORDS
 
 *Oracle has scripts available to build an ORDS image. At the time of writing (11-Nov-2017) there's an issue with the script ([Issue #646](https://github.com/oracle/docker-images/issues/646)) that prevents me from using it. I suspect that Oracle will include a pre-built image on their container registry in the future so I'll update the section with their image when/if it becomes available. In the mean time the image will be built using another script.*
 
-**Important:** I've created a separate [ORDS Docker Image](https://github.com/martindsouza/docker-ords) repo. Since it's being actively updated and to avoid duplication of documentation please refer to the repo to build your ORDS Docker image. **Go through it now to create your ORDS Docker image**.
+**Important:** We have a separate [ORDS Docker Image](https://github.com/evriinsight/docker-oracle-ords) repo. Since it's being actively updated and to avoid duplication of documentation please refer to the repo to build your ORDS Docker image. **Go through it now to create your ORDS Docker image**.
 
 #### Docker Image Confirmation
 
@@ -209,10 +203,9 @@ At this point you should see the following (or similar) output when running `doc
 docker images
 
 REPOSITORY                                          TAG                 IMAGE ID            CREATED             SIZE
-ords                                                18.1.1              a735271f7bf5        17 seconds ago      537MB
-container-registry.oracle.com/database/enterprise   12.2.0.1            12a359cd0528        2 months ago        3.44GB
+evriinsight/ords                                    21.1.3              a735271f7bf5        17 seconds ago      161MB
+evriinsight/odb                                     19c                 12a359cd0528        2 months ago        7.87GB
 ```
-
 
 ## Docker Containers
 

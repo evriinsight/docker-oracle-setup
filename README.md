@@ -71,7 +71,7 @@ The following port mapping will be used.
 Container | Container Port | Laptop Port | Description
 --- | --- | --- | ---
 `oracle` | `1521` | `[port]` | TNS listener for Oracle 19.3
-`ords-504` | `8080` | `[port]` | ORDS for APEX
+`ords` | `8080` | `[port]` | ORDS for APEX
 
 ### Passwords
 
@@ -186,7 +186,7 @@ docker pull container-registry.oracle.com/database/enterprise
 
 #### ORDS
 
-*Oracle has scripts available to build an ORDS image. At the time of writing (11-Nov-2017) there's an issue with the script ([Issue #646](https://github.com/oracle/docker-images/issues/646)) that prevents me from using it. I suspect that Oracle will include a pre-built image on their container registry in the future so I'll update the section with their image when/if it becomes available. In the mean time the image will be built using another script.*
+*Oracle has scripts available to build an ORDS image. At the time of writing (24-Jun-2021) there's an issue with the script ([Issue #646](https://github.com/oracle/docker-images/issues/646)) that prevents me from using it. I suspect that Oracle will include a pre-built image on their container registry in the future so I'll update the section with their image when/if it becomes available. In the mean time the image will be built using another script.*
 
 **Important:** We have a separate [ORDS Docker Image](https://github.com/evriinsight/docker-oracle-ords) repo. Since it's being actively updated and to avoid duplication of documentation please refer to the repo to build your ORDS Docker image. **Go through it now to create your ORDS Docker image**.
 

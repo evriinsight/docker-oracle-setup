@@ -440,7 +440,7 @@ docker run ...
 
 You should now be able to go to APEX via [http://localhost:8080/ords](http://localhost:8080/ords)
 
-#### ORDS Container Wrappup
+#### ORDS Container Wrapup
 
 When running ORDS containers for the first time they'll run in the foreground as the `-d` (`detached`) option was not provided (see [Docker documentation](https://docs.docker.com/engine/reference/run/#detached--d) for more info on this option). It's good to have it run in the foreground as it's easy to spot any issues with ORDS connecting to the database.
 

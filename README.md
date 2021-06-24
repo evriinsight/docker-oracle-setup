@@ -30,8 +30,7 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
       - [APEX 21.1 Install](#apex-1810-install)
       - [APEX 20.2 Install](#apex-514-install)
   - [ORDS Containers](#ords-containers)
-    - [ORDS 21.1](#ords-1810)
-    - [ORDS 20.2](#ords-514)
+    - [ORDS](#ords)
     - [ORDS Container Wrappup](#ords-container-wrappup)
 - [Useful Commands](#useful-commands)
   - [Quick Start](#quick-start)
@@ -45,7 +44,6 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
     - [Issues writing to `/ORCL` folder](#issues-writing-to-orcl-folder)
 
 <!-- /TOC -->
-
 
 
 ## Known Issues and Future Improvements
@@ -199,9 +197,9 @@ At this point you should see the following (or similar) output when running `doc
 ```
 docker images
 
-REPOSITORY                                          TAG                 IMAGE ID            CREATED             SIZE
-evriinsight/ords                                    21.1.3              a735271f7bf5        17 seconds ago      161MB
-evriinsight/odb                                     19c                 12a359cd0528        2 months ago        7.87GB
+REPOSITORY            TAG             IMAGE ID            CREATED             SIZE
+evriinsight/ords      21.1.3          a735271f7bf5        17 seconds ago      161MB
+evriinsight/odb       19c             12a359cd0528        2 months ago        7.87GB
 ```
 
 ## Docker Containers
@@ -225,8 +223,8 @@ evriinsight/odb:19c
 # Running docker ps will result in:
 docker ps
 
-CONTAINER ID        IMAGE                                                        COMMAND                  CREATED             STATUS                            PORTS                               NAMES
-6b4d96d63cf5        evriinsight/odb:19c                                          "/bin/sh -c '/bin/..."   4 seconds ago       Up 5 seconds (health: starting)   5500/tcp, 0.0.0.0:1521->1521/tcp   oracle
+CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS                            PORTS                               NAMES
+6b4d96d63cf5        evriinsight/odb:19c       "/bin/sh -c '/bin/..."   4 seconds ago       Up 5 seconds (health: starting)   5500/tcp, 0.0.0.0:1521->1521/tcp    oracle
 
 # More specifically if you need to create a script around this
 # docker inspect --format="{{.State.Health.Status}}" oracle
@@ -327,8 +325,8 @@ begin
     apex_util.set_security_group_id( 10 );
     apex_util.create_user(
         p_user_name => 'ADMIN',
-        p_email_address => 'martin@talkapex.com',
-        p_web_password => 'Oradoc_db1',
+        p_email_address => '[email]',
+        p_web_password => '[password]',
         p_developer_privs => 'ADMIN',
         p_change_password_on_first_use => 'N');
     apex_util.set_security_group_id( null );
@@ -388,8 +386,8 @@ begin
     apex_util.set_security_group_id( 10 );
     apex_util.create_user(
         p_user_name => 'ADMIN',
-        p_email_address => 'martin@talkapex.com',
-        p_web_password => 'Oradoc_db1',
+        p_email_address => '[email]',
+        p_web_password => '[password]',
         p_developer_privs => 'ADMIN',
         p_change_password_on_first_use => 'N');
     apex_util.set_security_group_id( null );
@@ -409,54 +407,31 @@ exit
 
 Each APEX PDB should have an associated ORDS container. A few notes about each ORDS container:
 
-- Instead of naming the ORDS containers with their version number, they'll be named to reference the corresponding APEX version (example `ords-504` will be used to reference the PDB hosing APEX `5.0.4`). You may want to alter your naming scheme if you plan to test with multiple versions of ORDS.
-- **Important:** Refer to [Docker ORDS](https://github.com/martindsouza/docker-ords) documentation on how to run each ORDS setup. Only modifications will be mentioned in each section below.
+- Instead of naming the ORDS containers with their version number, they'll be named to reference the corresponding APEX version (example `ords` will be used to reference the PDB hosting APEX). You may want to alter your naming scheme if you plan to test with multiple versions of ORDS.
+- **Important:** Refer to [Docker ORDS](https://github.com/evriinsight/docker-oracle-ords) documentation on how to run each ORDS setup. Only modifications will be mentioned in each section below.
 
-#### ORDS 21.1
+#### ORDS
 
 ```bash
 -- Note: THIS IS NOT A COMPLETE docker run command
--- Please reference https://github.com/martindsouza/docker-ords for full docker run commands
+-- Please reference https://github.com/evriinsight/docker-oracle-ords for full docker run commands
 -- The purpose of this is to highlight the passwords and connection strings to use for each PDB 
 docker run ...
-  --name ords-1810 \
+  --name ords \
   --network=oracle_network \
-  -e TZ=America/Edmonton \
+  -e TZ=Europe/London \
   -e DB_HOSTNAME=oracle \
   -e DB_PORT=1521 \
-  -e DB_SERVICENAME=orclpdb1810.localdomain \
-  -e APEX_PUBLIC_USER_PASS=oracle \
-  -e APEX_LISTENER_PASS=oracle \
-  -e APEX_REST_PASS=oracle \
-  -e ORDS_PASS=oracle \
-  -e SYS_PASS=Oradoc_db1 \
+  -e DB_SERVICENAME=[pdb] \
+  -e APEX_PUBLIC_USER_PASS=[password] \
+  -e APEX_LISTENER_PASS=[password] \
+  -e APEX_REST_PASS=[password] \
+  -e ORDS_PASS=[password] \
+  -e SYS_PASS=[password] \
   ...
 ```
 
-You should now be able to go to APEX via [http://localhost:8080/ords](http://localhost:32181/ords)
-
-#### ORDS 20.2
-
-```bash
--- Note: THIS IS NOT A COMPLETE docker run command
--- Please reference https://github.com/martindsouza/docker-ords for full docker run commands
--- The purpose of this is to highlight the passwords and connection strings to use for each PDB
-docker run ...
-  --name ords-514 \
-  --network=oracle_network \
-  -e TZ=America/Edmonton \
-  -e DB_HOSTNAME=oracle \
-  -e DB_PORT=1521 \
-  -e DB_SERVICENAME=orclpdb514.localdomain \
-  -e APEX_PUBLIC_USER_PASS=oracle \
-  -e APEX_LISTENER_PASS=oracle \
-  -e APEX_REST_PASS=oracle \
-  -e ORDS_PASS=oracle \
-  -e SYS_PASS=Oradoc_db1 \
-  ...
-```
-
-You should now be able to go to APEX via http://localhost:8080/ords
+You should now be able to go to APEX via [http://localhost:8080/ords](http://localhost:8080/ords)
 
 
 #### ORDS Container Wrappup
@@ -476,15 +451,11 @@ To quickly start and stop the docker containers:
 ```bash
 # Start
 docker start oracle
-docker start ords-504
-docker start ords-514
-docker start ords-1810
+docker start ords
 
 # Stop
 docker stop -t 200 oracle
-docker stop -t 200 ords-504
-docker stop -t 200 ords-514
-docker stop -t 200 ords-1810
+docker stop -t 200 ords
 
 ```
 
@@ -515,16 +486,13 @@ docker network ls
 docker network inspect oracle_network
 ```
 
-
 ### Oracle
 
 #### Connection Strings
 
 ```bash
 sqlcl sys/[password]@localhost:1521:orclcdb as sysdba
-sqlcl sys/[password]@localhost:1521/orclpdb1.localdomain as sysdba
-sqlcl sys/[password]@localhost:1521/orclpdb2.localdomain as sysdba
-sqlcl sys/[password]@localhost:1521/orclpdb3.localdomain as sysdba
+sqlcl sys/[password]@localhost:1521/[pdb].localdomain as sysdba
 ```
 
 #### DBA
@@ -538,7 +506,7 @@ drop pluggable database orclpdb504 including datafiles;
 
 # Create tablespace (as PDB DBA)
 create tablespace users
-  datafile 'users-1810.dat' 
+  datafile 'users.dat' 
     size 100m
     autoextend on
     next 20m

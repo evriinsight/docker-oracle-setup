@@ -56,7 +56,8 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
 
  The following articles and all these scripts are a result of a combination of the code found in the links.
  
-- [docker-oracle-setup](https://github.com/martindsouza/docker-oracle-setup) by [Martin D'Souza](https://twitter.com/martindsouza)
+- [Docker Oracle Setup](https://github.com/martindsouza/docker-oracle-setup) by [Martin D'Souza](https://twitter.com/martindsouza)
+- [Docker Ords Setup](https://github.com/martindsouza/docker-oracle-ords) by [Martin D'Souza](https://twitter.com/martindsouza)
 - [APEX and ORDS up and running in....2 steps!](http://joelkallman.blogspot.ca/2017/05/apex-and-ords-up-and-running-in2-steps.html) by [Joel Kallman](https://twitter.com/joelkallman)
 - [Dockerize your APEX development environment](http://roelhartman.blogspot.ca/2017/10/dockerize-your-apex-development.html) by [Roel Hartman](https://twitter.com/RoelH)
 - [Oracle Database 12c now available on Docker](https://sqlmaria.com/2017/04/27/oracle-database-12c-now-available-on-docker/) by [Maria Colgan](https://twitter.com/sqlmaria)

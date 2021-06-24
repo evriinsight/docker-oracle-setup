@@ -58,6 +58,7 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
  
 - [Docker Oracle Setup](https://github.com/martindsouza/docker-oracle-setup) by [Martin D'Souza](https://twitter.com/martindsouza)
 - [Docker Ords Setup](https://github.com/martindsouza/docker-oracle-ords) by [Martin D'Souza](https://twitter.com/martindsouza)
+- [sqlcl Setup](http://www.talkapex.com/2015/04/installing-sqlcl) by [Martin D'Souza](https://twitter.com/martindsouza)
 - [APEX and ORDS up and running in....2 steps!](http://joelkallman.blogspot.ca/2017/05/apex-and-ords-up-and-running-in2-steps.html) by [Joel Kallman](https://twitter.com/joelkallman)
 - [Dockerize your APEX development environment](http://roelhartman.blogspot.ca/2017/10/dockerize-your-apex-development.html) by [Roel Hartman](https://twitter.com/RoelH)
 - [Oracle Database 12c now available on Docker](https://sqlmaria.com/2017/04/27/oracle-database-12c-now-available-on-docker/) by [Maria Colgan](https://twitter.com/sqlmaria)
@@ -67,7 +68,7 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
 
 - All my scripts are Linux / MacOS focused. If you use a Windows machine you'll need to translate
 - I specifically made reference to "your laptop" to emphasize what was run "on your machine" vs "in a docker container"
-- I use [SQLcl](http://www.oracle.com/technetwork/developer-tools/sqlcl/overview/index.html) instead of SQLplus on my laptop. I've also renamed the default command `sql` to `sqlcl`. You can use `sqlplus` or follow my [sqlcl install instructions](http://www.talkapex.com/2015/04/installing-sqlcl/).
+- I use [SQLcl](http://www.oracle.com/technetwork/developer-tools/sqlcl/overview/index.html) instead of SQLplus on my laptop. I've also renamed the default command `sql` to `sqlcl`. You can use `sqlplus` or follow Martin D'Souza's [sqlcl install instructions](http://www.talkapex.com/2015/04/installing-sqlcl).
 
 ### Port Mapping
 

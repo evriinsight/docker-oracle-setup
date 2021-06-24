@@ -1,6 +1,7 @@
 # docker-oracle-setup
 
-This document will keep an up to date version of my personal Oracle dockerized development environment. The main goal is to have the Oracle database with APEX installed connected to ORDS.
+This document will keep an up to date version of evriINSIGHT's Oracle dockerized development environment. The main goal is to have the Oracle database with APEX installed connected to ORDS.
+It has been forked from Martin Giffy D'Souza's excellent repo and we have then updated it with the latest versions of the Oracle software.
 
 This is achieved using Oracle 19c containers (not to be confused with Docker containers). If you're not too familiar with Oracle containers I highly recommend reading [this](http://www.oracle.com/technetwork/articles/database/multitenant-part1-pdbs-2193987.html) article which covers Container Databases (CDB) and Pluggable Databases (PDB).
 
@@ -50,6 +51,7 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
 
 - Use Oracle's official ORDS image from the Container Registry
 
+
 ## References
 
  The following articles and all my scripts are a result of a combination of the code found in the links.
@@ -57,6 +59,7 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
 - [APEX and ORDS up and running in....2 steps!](http://joelkallman.blogspot.ca/2017/05/apex-and-ords-up-and-running-in2-steps.html) by [Joel Kallman](https://twitter.com/joelkallman)
 - [Dockerize your APEX development environment](http://roelhartman.blogspot.ca/2017/10/dockerize-your-apex-development.html) by [Roel Hartman](https://twitter.com/RoelH)
 - [Oracle Database 12c now available on Docker](https://sqlmaria.com/2017/04/27/oracle-database-12c-now-available-on-docker/) by [Maria Colgan](https://twitter.com/sqlmaria)
+
 
 ## Background
 
@@ -202,6 +205,7 @@ evriinsight/ords      21.1.3          a735271f7bf5        17 seconds ago      16
 evriinsight/odb       19c             12a359cd0528        2 months ago        7.87GB
 ```
 
+
 ## Docker Containers
 
 Now that the setup is complete we can create all the Docker containers
@@ -262,8 +266,8 @@ select vp.name, vp.open_mode from v$pdbs vp;
 NAME        OPEN_MODE
 PDB$SEED    READ WRITE
 ORCLPDB1    READ WRITE
-ORCLPDB2  MOUNTED
-ORCLPDB3  MOUNTED
+ORCLPDB2    MOUNTED
+ORCLPDB3    MOUNTED
 
 -- Open the PDB
 alter pluggable database orclpdb2 open read write;
@@ -433,12 +437,12 @@ docker run ...
 
 You should now be able to go to APEX via [http://localhost:8080/ords](http://localhost:8080/ords)
 
-
 #### ORDS Container Wrappup
 
 When running ORDS containers for the first time they'll run in the foreground as the `-d` (`detached`) option was not provided (see [Docker documentation](https://docs.docker.com/engine/reference/run/#detached--d) for more info on this option). It's good to have it run in the foreground as it's easy to spot any issues with ORDS connecting to the database.
 
 To stop stop the container hit `ctrl+c`. To restart the ORDS container run `docker start ords-1810`.
+
 
 ## Useful Commands
 
@@ -500,9 +504,7 @@ sqlcl sys/[password]@localhost:1521/[pdb].localdomain as sysdba
 ```sql
 
 # Drop PDB
-drop pluggable database orclpdb1810 including datafiles;
-drop pluggable database orclpdb514 including datafiles;
-drop pluggable database orclpdb504 including datafiles;
+drop pluggable database [pdb] including datafiles;
 
 # Create tablespace (as PDB DBA)
 create tablespace users
@@ -522,13 +524,6 @@ alter user &new_user quota unlimited on users;
 alter user &new_user default tablespace users;
 ```
 
-#### Sample Data
-
-Using SQLcl you can create the `dept` and `emp` table your schema using the following script:
-
-```sql
-@https://raw.githubusercontent.com/OraOpenSource/OXAR/master/oracle/emp_dept.sql
-```
 
 ## Common Problems
 

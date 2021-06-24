@@ -1,7 +1,7 @@
 # docker-oracle-setup
 
 This document will keep an up to date version of evriINSIGHT's Oracle dockerized development environment. The main goal is to have the Oracle database with APEX installed connected to ORDS.
-It has been forked from Martin Giffy D'Souza's excellent repo and we have then updated it with the latest versions of the Oracle software.
+It has been forked from Martin Giffy D'Souza's excellent repo (link below) and we have then updated it with the latest versions of the Oracle software.
 
 This is achieved using Oracle 19c containers (not to be confused with Docker containers). If you're not too familiar with Oracle containers I highly recommend reading [this](http://www.oracle.com/technetwork/articles/database/multitenant-part1-pdbs-2193987.html) article which covers Container Databases (CDB) and Pluggable Databases (PDB).
 
@@ -28,8 +28,8 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
     - [CDB Setup](#cdb-setup)
     - [PDB Setup](#pdb-setup)
       - [Create PDBs](#create-pdbs)
-      - [APEX 21.1 Install](#apex-1810-install)
-      - [APEX 20.2 Install](#apex-514-install)
+      - [APEX 21.1 Install](#apex-21.1-install)
+      - [APEX 20.2 Install](#apex-20.2-install)
   - [ORDS Containers](#ords-containers)
     - [ORDS](#ords)
     - [ORDS Container Wrappup](#ords-container-wrappup)
@@ -54,8 +54,9 @@ This is achieved using Oracle 19c containers (not to be confused with Docker con
 
 ## References
 
- The following articles and all my scripts are a result of a combination of the code found in the links.
+ The following articles and all these scripts are a result of a combination of the code found in the links.
  
+- [docker-oracle-setup](https://github.com/martindsouza/docker-oracle-setup) by [Martin D'Souza](https://twitter.com/martindsouza)
 - [APEX and ORDS up and running in....2 steps!](http://joelkallman.blogspot.ca/2017/05/apex-and-ords-up-and-running-in2-steps.html) by [Joel Kallman](https://twitter.com/joelkallman)
 - [Dockerize your APEX development environment](http://roelhartman.blogspot.ca/2017/10/dockerize-your-apex-development.html) by [Roel Hartman](https://twitter.com/RoelH)
 - [Oracle Database 12c now available on Docker](https://sqlmaria.com/2017/04/27/oracle-database-12c-now-available-on-docker/) by [Maria Colgan](https://twitter.com/sqlmaria)
